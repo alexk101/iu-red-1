@@ -6,6 +6,7 @@ import sys
 import os
 import torch
 import polars as pl
+import yaml
 
 # While running the model and focused on the video feed, the level of noise intensity
 # and blurring can be adjusted by modifying the param.yml file and pressing 'u' to 
@@ -66,7 +67,7 @@ def cv_test():
     gen_noise()
     # print(cv.getBuildInformation())
     # 192.168.1.150
-    out = RTSPOutput(30, 'rtsp://192.168.1.150:8554/iu-red-1')
+    out = RTSPOutput(30, 'rtsp://192.168.1.150:8554/red-team')
     out.start()
     cap = cv.VideoCapture(target)
     if not cap.isOpened():
@@ -96,9 +97,10 @@ def cv_test():
         if key == ord('q'):
             break
         elif key == ord('u'):
-            with open('./strength.txt', 'r') as fp:
-                STRENGTH = int(fp.readline().strip())
-                BLUR = int(fp.readline().strip())
+            with open('./params.yml', 'r') as fp:
+                params = yaml.safe_load(fp)
+                STRENGTH = params['noise']
+                BLUR = params['blur']
             print(STRENGTH)
             gen_noise()
     # When everything done, release the capture
